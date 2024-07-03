@@ -1,0 +1,102 @@
+<div align="center">
+  <div>
+    <img height = "150" width = "150" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original-wordmark.svg" />
+  </div>
+</div>
+
+<p style="text-align: justify;">Crie um banco de dados contendo as seguintes tabelas, cliente, telefone e endereço. Esse banco sera usado por um mercado dee bairro para cadastrar os seus clientes.</p>
+
+<p style="text-align: justify;">Coloque em anexo o script de criação do banco, das tabelas e das consultas utilizando inner join.</p>
+
+
+```sql
+CREATE DATABASE MERCADO;
+```
+
+```sql
+CREATE TABLE CLIENTE(
+
+	IDCLIENTE INT PRIMARY KEY AUTO_INCREMENT,
+    NOME VARCHAR(255) NOT NULL,
+    SEXO ENUM('F', 'M') NOT NULL,
+    EMAIL VARCHAR(255) UNIQUE NOT NULL,
+    CPF CHAR(11) UNIQUE NOT NULL
+
+);
+```
+
+```sql
+CREATE TABLE ENDERECO(
+
+	IDENDERECO INT PRIMARY KEY AUTO_INCREMENT,
+    RUA VARCHAR(255) NOT NULL,
+    BAIRRO VARCHAR(255) NOT NULL,
+    CIDADE VARCHAR(255) NOT NULL,
+    ESTADO CHAR(2) NOT NULL,
+    ID_CLIENTE INT UNIQUE NOT NULL,
+    FOREIGN KEY (ID_CLIENTE)
+    REFERENCES CLIENTE (IDCLIENTE)
+
+);
+```
+
+```sql
+CREATE TABLE TELEFONE(
+
+	IDTELEFONE INT PRIMARY KEY AUTO_INCREMENT,
+    TIPO ENUM('COM', 'RES', 'CEL') NOT NULL,
+    NUMERO CHAR(11) NOT NULL,
+    ID_CLIENTE INT NOT NULL,
+    FOREIGN KEY (ID_CLIENTE)
+    REFERENCES CLIENTE(IDCLIENTE)
+
+);
+```
+
+```sql
+SELECT C.NOME, C.EMAIL,
+E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON
+C.IDCLIENTE = E.ID_CLIENTE;
+```
+
+```sql
+SELECT C.NOME, C.EMAIL, C.SEXO, C.CPF,
+E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+```
+
+```sql
+SELECT C.NOME, C.EMAIL, C.SEXO, C.CPF,
+E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+WHERE
+SEXO = 'F';
+```
+
+```sql
+SELECT C.NOME, C.EMAIL, C.SEXO, C.CPF,
+E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+WHERE
+(C.SEXO = 'M')
+AND
+(E.ESTADO = 'RJ');
+```
