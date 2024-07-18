@@ -100,3 +100,9 @@ WHERE
 AND
 (E.ESTADO = 'RJ');
 ```
+
+```sql
+UPDATE CLIENTE
+SET SEXO = 'M'
+WHERE IDCLIENTE = 14;
+```
