@@ -1,0 +1,237 @@
+<div align="center">
+  <div>
+    <img height = "150" width = "150" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original-wordmark.svg" />
+  </div>
+</div>
+
+<p style="text-align: justify;">Crie um banco de dados chamado Oficina e conecte-se ao banco</p>
+
+```sql
+CREATE DATABASE OFICINA;
+```
+
+<p style="text-align: justify;">Sr.José quer modernizar a sua oficina, e por enqaunto, cadastra os carros que entram para realizar o serviço  os seus respectivos donos. Sr.José mencionou que cada cliente possui apenas um carro. Um carro possui uma marca. Sr.osé também quer saber as cores dos carros para ter idéia de qual tinta comprar, e inrforma que um carro pode ter mais que uma cor. Sr José necessita armazenar os telefones dos clientes, mas não quer que eles sejam obrigatórios.</p>
+
+```sql
+CREATE TABLE CLIENTE(
+
+	ID INT PRIMARY KEY AUTO_INCREMENT,
+    NOME VARCHAR(255) NOT NULL,
+    EMAIL VARCHAR(255) NOT NULL,
+    SEXO ENUM('F', 'M') NOT NULL,
+    CPF CHAR(11) NOT NULL UNIQUE
+
+);
+```
+
+```sql
+CREATE TABLE TELEFONE(
+
+	ID INT PRIMARY KEY AUTO_INCREMENT,
+    NUMERO VARCHAR(255) NOT NULL,
+    TIPO ENUM('CEL', 'RES', 'COM') NOT NULL,
+    ID_CLIENTE INT,
+    FOREIGN KEY (ID_CLIENTE)
+    REFERENCES CLIENTE(ID)
+
+);
+```
+
+```sql
+CREATE TABLE MARCA(
+
+	ID INT PRIMARY KEY AUTO_INCREMENT,
+    NOME VARCHAR(255) NOT NULL UNIQUE
+
+);
+```
+
+```sql
+CREATE TABLE CARRO(
+
+	ID INT PRIMARY KEY AUTO_INCREMENT,
+    MODELO VARCHAR(255) NOT NULL,
+    ANO CHAR(4) NOT NULL,
+    ID_CLIENTE INT NOT NULL UNIQUE,
+    ID_MARCA INT NOT NULL,
+    FOREIGN KEY (ID_CLIENTE)
+    REFERENCES CLIENTE(ID),
+    FOREIGN KEY (ID_MARCA)
+    REFERENCES MARCA(ID)
+
+);
+```
+
+```sql
+CREATE TABLE COR(
+
+	ID INT PRIMARY KEY AUTO_INCREMENT,
+    NOME VARCHAR(255),
+    ID_CARRO INT NOT NULL,
+    FOREIGN KEY (ID_CARRO)
+    REFERENCES CARRO(ID)
+
+);
+```
+
+```sql
+INSERT INTO MARCA(NOME)
+VALUES
+('FIAT'),
+('VW'),
+('FORD'),
+('PEUGEOT'),
+('HONDA'),
+('TOYOTA'),
+('JEEP');
+```
+
+```sql
+INSERT INTO CLIENTE(NOME, EMAIL, SEXO, CPF)
+VALUES
+('VINICIOS', 'VINICIOS@GMAIL.COM', 'M', '23814929098'),
+('DANIEL', 'DANIEL@HOTMAIL.COM', 'M', '04425183070'),
+('LUIZINHO', 'LUIZINHO@BOL.COM', 'M', '85506390017'),
+('JOAO', 'JOAO@HXTOS.COM.BR', 'M', '32375858077'),
+('BEATIZ', 'BEATIZ@BEATIZ.COM', 'F', '68018022089'),
+('ELIS', 'ELIS@ELIZAMA.COM.BR', 'F', '39741508034'),
+('UNGER', 'UNGER@GMAIL.COM.BR', 'F', '68792811094'),
+('TVARES', 'TAVARES@GMAIL.COM.BR', 'M', '17961263063'),
+('EDU', 'EDU@OUTLOOK', 'M', '29135216069'),
+('IGOR', 'IGOR@OUTLOOK.COM', 'M', '13655035004');
+```
+
+```sql
+INSERT INTO TELEFONE(NUMERO, TIPO, ID_CLIENTE)
+VALUES
+('11176424025', 'RES', 6),
+('90897778065', 'COM', 8),
+('64863120095', 'CEL', 3),
+('39185241083', 'COM', 5),
+('82668882052', 'RES', 9),
+('86259673027', 'COM', 6),
+('40297419080', 'CEL', 6),
+('44184302025', 'RES', 10);
+```
+
+```sql
+SELECT C.NOME, C.EMAIL, C.SEXO, C.CPF,
+T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN TELEFONE T
+ON
+C.ID = T.ID_CLIENTE;
+```
+
+```sql
+CREATE VIEW VW_CLIENTE_SX_M AS
+	SELECT C.NOME, C.EMAIL, C.SEXO, C.CPF,
+	T.NUMERO, T.TIPO
+	FROM CLIENTE C
+	INNER JOIN TELEFONE T
+	ON
+	C.ID = T.ID_CLIENTE
+    WHERE
+    SEXO = 'M';
+```
+
+```sql
+INSERT INTO CARRO(MODELO, ANO, ID_CLIENTE, ID_MARCA)
+VALUES
+('GOL', 2020, 7, 2),
+('UNO', 2012, 5, 1),
+('KA', 2021, 9, 3),
+('206', 2006, 3, 4),
+('CIVIC', 2019, 8, 5),
+('PALIO', 1996, 4, 1),
+('POLO', 2000, 2, 2),
+('FIT', 2018, 1, 5),
+('NIVUS', 2023, 6, 1),
+('COROLA', 2018, 10, 5);
+```
+
+```sql
+INSERT INTO COR(NOME, ID_CARRO)
+VALUES
+('AZUL', 7),
+('PRETO', 10),
+('BRANCO', 2),
+('CINZA', 1),
+('VERDE', 2),
+('VERDE AGUA', 6),
+('MARROM', 3),
+('LARANJA', 5),
+('VERMELHO', 8),
+('AZUL', 9),
+('BRANCO', 4);
+```
+
+```sql
+SELECT CLI.NOME, CLI.EMAIL, CLI.SEXO, CLI.CPF,
+MAR.NOME,
+CAR.MODELO, CAR.ANO,
+C.NOME
+FROM
+CLIENTE CLI
+INNER JOIN CARRO CAR
+ON
+CLI.ID = CAR.ID_CLIENTE
+INNER JOIN MARCA MAR
+ON
+MAR.ID = CAR.ID_MARCA
+INNER JOIN COR C
+ON
+CAR.ID = C.ID_CARRO;
+```
+
+```sql
+CREATE VIEW VW_RELATORIO_CARRO AS
+	SELECT CLI.NOME AS 'CLIENTE', CLI.EMAIL, CLI.SEXO, CLI.CPF,
+	MAR.NOME AS 'MARCA',
+	CAR.MODELO, CAR.ANO,
+	C.NOME AS 'COR'
+	FROM
+	CLIENTE CLI
+	INNER JOIN CARRO CAR
+	ON
+	CLI.ID = CAR.ID_CLIENTE
+	INNER JOIN MARCA MAR
+	ON
+	MAR.ID = CAR.ID_MARCA
+	INNER JOIN COR C
+	ON
+	CAR.ID = C.ID_CARRO;
+```
+
+```sql
+CREATE PROCEDURE ADD_CLIENTE(NOME_CLIENTE VARCHAR(255), EMAIL_CLIENTE VARCHAR(255), SEXO_CLIENTE ENUM('F', 'M'), CPF_CLIENTE CHAR(11))
+BEGIN
+	INSERT INTO CLIENTE(NOME, EMAIL, SEXO, CPF)
+	VALUES
+    (NOME_CLIENTE, EMAIL_CLIENTE, SEXO_CLIENTE, CPF_CLIENTE);
+END$
+```
+
+```sql
+CREATE PROCEDURE GET_MARCACARRO(MARCA_CARRO VARCHAR(255))
+BEGIN
+	SELECT M.NOME AS 'MARCA',
+    C.MODELO
+    FROM CARRO C
+    INNER JOIN MARCA M
+    ON
+    M.ID = C.ID_MARCA
+    WHERE
+    M.NOME = MARCA_CARRO;
+END$
+```
+
+```sql
+SELECT M.NOME, COUNT(*) AS 'TOTAL'
+FROM CARRO C
+INNER JOIN MARCA M
+ON
+M.ID = C.ID_MARCA
+GROUP BY M.NOME
+ORDER BY COUNT(*) DESC;
+```
